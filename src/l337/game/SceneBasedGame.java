@@ -42,5 +42,9 @@ public abstract class SceneBasedGame extends AbstractGame{
 			currentScene.draw(g);
 		}
 	}
+	
+	public Scene getCurrentScene(){
+		return this.currentScene;
+	}
 
 }

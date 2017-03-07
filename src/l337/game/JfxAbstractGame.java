@@ -1,39 +1,39 @@
 package l337.game;
 
-import java.awt.Canvas;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.image.BufferStrategy;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.KeyCode;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 import l337.game.camera.Viewport;
 import l337.game.utils.AssetManager;
 import l337.game.utils.KeyState;
 
-// TODO java doc everything.
-// TODO fix stalling/delay bug
-public abstract class AbstractGame extends KeyAdapter implements Game {
-	public static final Color DEFAULT_BG_COLOR = Color.black;
+public abstract class JfxAbstractGame extends Application implements JfxGame{
+	public static final Color DEFAULT_BG_COLOR = Color.BLACK;
 	
 	private String title;
 	private Canvas canvas;
 	private Viewport viewport;
 	private AssetManager assetLoader;
-	private BufferStrategy bufferStrategy;
 	private int width;
 	private int height;
+	private Color bgColor;
 	protected boolean debug;
 	protected int score;
 	
-	public Map<Integer, Boolean> keysdown = new HashMap<>();
-	public Map<Integer, KeyState> keystate = new HashMap<>();
+	public Map<KeyCode, Boolean> keysdown = new HashMap<>();
+	public Map<KeyCode, KeyState> keystate = new HashMap<>();
 
 	private static final long TARGET_FPS = 60; // TODO : possibly make this tweakable
 	private static final float ONE_SECOND = 1000f;
@@ -42,31 +42,49 @@ public abstract class AbstractGame extends KeyAdapter implements Game {
 	
 	float delta = 0f; // fraction of a second since the last update
 	long lastUpdate;
-	
-	public AbstractGame(String title, int width, int height, Color bgColor) {
+
+	public JfxAbstractGame(String title, int width, int height, Color bgColor) {
 		this.title = title;
 		this.canvas = new Canvas();
 		this.width = width;
 		this.height = height;
+		this.bgColor = bgColor;
 		this.viewport = new Viewport(width, height);
 		this.assetLoader = new AssetManager();
-		canvas.setPreferredSize(new Dimension(width, height));
-		canvas.setBackground(bgColor);
-		canvas.addKeyListener(this);
-	}
-	
-	private void initCanvas(){
-		bufferStrategy = canvas.getBufferStrategy();
-		if (bufferStrategy == null) {
-			canvas.createBufferStrategy(3);
-			bufferStrategy = canvas.getBufferStrategy();
-		}
+		canvas.setWidth(width);
+		canvas.setHeight(height);
+		
+		canvas.setOnKeyPressed(e -> {
+			KeyCode k = e.getCode();
+			KeyState currentState = keysdown.getOrDefault(k, false) ? KeyState.Pressed : KeyState.JustPressed;
+			keystate.put(k, currentState);
+			keysdown.put(k, true);
+		});
+		canvas.setOnKeyReleased(e -> {
+			KeyCode k = e.getCode();
+			KeyState currentState = keysdown.getOrDefault(k, false) ? KeyState.Released : KeyState.JustReleased;
+			keystate.put(k, currentState);
+			keysdown.put(k, false);
+		});
 	}
 	
 	@Override
-	public void run() {
-		initInternal();
-
+	public void start(Stage primaryStage) throws Exception {
+		VBox vbox = new VBox();		
+		vbox.getChildren().add(canvas);
+		
+		primaryStage.setTitle(title);
+		primaryStage.setScene(new Scene(vbox));
+		primaryStage.setResizable(false);
+		primaryStage.show();
+		
+		primaryStage.setOnCloseRequest(e -> {
+			Platform.exit();
+			System.exit(0);
+		});
+		
+		canvas.requestFocus();
+		
 		new Timer().scheduleAtFixedRate(new TimerTask(){
 		    @Override
 		    public void run(){
@@ -76,30 +94,16 @@ public abstract class AbstractGame extends KeyAdapter implements Game {
 		},0,(int)TARGET_MS_PER_FRAME);
 	}
 	
-	void initInternal(){
-		initCanvas();
-		// TODO load splash screen while the assets get loaded.
-		
-		
-		// delegate to implementing class
-		init();
-	}
-
 	private void drawInternal(){
-		Graphics g = bufferStrategy.getDrawGraphics();
-		Graphics2D g2d = (Graphics2D) g;
+		GraphicsContext g = canvas.getGraphicsContext2D();
 		
-		g.setColor(canvas.getBackground());
+		g.setFill(bgColor);
 		g.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 		
-		g2d.translate(-viewport.getX(), -viewport.getY());
+		g.translate(-viewport.getX(), -viewport.getY());
 		
 		// delegate to implementing class
 		draw(g);
-		
-		g.dispose();
-		g2d.dispose();
-		bufferStrategy.show();
 	}
 	
 	private void updateInternal(){
@@ -114,25 +118,6 @@ public abstract class AbstractGame extends KeyAdapter implements Game {
 		update(Math.min(delta, MAX_DELTA));
 		
 		viewport.update();
-	}
-	
-	/** Keyboard Input Adapter */
-	@Override
-	public void keyPressed(KeyEvent e) {
-		int keyCode = e.getKeyCode();
-		KeyState curentState = keysdown.getOrDefault(keyCode, false) ? KeyState.Pressed : KeyState.JustPressed;
-		keysdown.put(e.getKeyCode(), true);
-		keystate.put(e.getKeyCode(), curentState);
-		e.consume();
-	}
-	
-	@Override
-	public void keyReleased(KeyEvent e) {
-		int keyCode = e.getKeyCode();
-		KeyState curentState = keysdown.getOrDefault(keyCode, false) ? KeyState.Released : KeyState.JustReleased;
-		keysdown.put(e.getKeyCode(), false);
-		keystate.put(e.getKeyCode(), curentState);
-		e.consume();
 	}
 	
 	/** Getters and Setters */
@@ -157,15 +142,15 @@ public abstract class AbstractGame extends KeyAdapter implements Game {
 	}
 	
 	@Override
-	public Map<Integer, Boolean> getKeysDown() {
+	public Map<KeyCode, Boolean> getKeysDown() {
 		return keysdown;
 	}
 	
 	@Override
-	public Map<Integer, KeyState> getKeyState() {
+	public Map<KeyCode, KeyState> getKeyState() {
 		return keystate;
 	}
-
+	
 	@Override
 	public int getWidth() {
 		return width;
@@ -187,8 +172,9 @@ public abstract class AbstractGame extends KeyAdapter implements Game {
 	}
 	
 	@Override
-	public void setDebug(boolean debug) {
+	public JfxGame setDebug(boolean debug) {
 		this.debug = debug;
+		return this;
 	}
-	
+
 }

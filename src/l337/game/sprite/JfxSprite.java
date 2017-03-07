@@ -1,29 +1,20 @@
 package l337.game.sprite;
 
-import java.awt.Graphics;
-import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
-import l337.game.Game;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.shape.Rectangle;
+import l337.game.JfxGame;
 
-public abstract class Sprite {
-	public static final int DEFAULT_START_X = 0;
-	public static final int DEFAULT_START_Y = 0;
-	
-	protected Game game;
+public abstract class JfxSprite {
+	protected JfxGame game;
 	protected double x, y;
 	protected int width, height;
-	private List<Sprite> checkForCollision = new ArrayList<>();
+	private List<JfxSprite> checkForCollision = new ArrayList<>();
 
-	public Sprite(Game game) {
-		this(game, DEFAULT_START_X, DEFAULT_START_Y);
-	}
-	
-	public Sprite(Game game, int startX, int startY) {
+	public JfxSprite(JfxGame game) {
 		this.game = game;
-		this.x = startX;
-		this.y = startY;
 	}
 	
 	public int getX() {
@@ -37,35 +28,35 @@ public abstract class Sprite {
 	public abstract int getHeight();
 	
 	
-	public Sprite setX(double x) {
+	public JfxSprite setX(double x) {
 		this.x = x;
 		return this;
 	}
-	public Sprite setY(double y){
+	public JfxSprite setY(double y){
 		this.y = y;
 		return this;
 	}
 	
-	public Sprite setPosition(double x, double y){
+	public JfxSprite setPosition(double x, double y){
 		setX(x);
 		setY(y);
 		return this;
 	}
 	
 	abstract public void update(float delta);
-	abstract public void draw(Graphics g);
+	abstract public void draw(GraphicsContext g);
 
-	public boolean collidedWith(Sprite sprite) {
+	public boolean collidedWith(JfxSprite sprite) {
 		// AABB collision test
-		return getRect().intersects(sprite.getRect());
+		return getRect().intersects(sprite.getRect().getBoundsInLocal());
 	}
 	
-	public Sprite canCollideWith(Sprite sprite) {
+	public JfxSprite canCollideWith(JfxSprite sprite) {
 		checkForCollision.add(sprite);
 		return this;
 	}
 	
-	public Sprite canCollideWith(List<Sprite> sprites) {
+	public JfxSprite canCollideWith(List<JfxSprite> sprites) {
 		checkForCollision.addAll(sprites);
 		return this;
 	}
@@ -74,32 +65,32 @@ public abstract class Sprite {
 		return new Rectangle(getX(), getY(), getWidth(), getHeight());
 	}
 	
-	public Sprite leftAlign(){
+	public JfxSprite leftAlign(){
 		setX(0);
 		return this;
 	}
 	
-	public Sprite centerAlign(){
+	public JfxSprite centerAlign(){
 		setX(game.getWidth()/2 - getWidth()/2);
 		return this;
 	}
 	
-	public Sprite rightAlign(){
+	public JfxSprite rightAlign(){
 		setX(game.getWidth() - 1 - getWidth());
 		return this;
 	}
 	
-	public Sprite topAlign(){
+	public JfxSprite topAlign(){
 		setY(0);
 		return this;
 	}
 	
-	public Sprite middleAlign(){
+	public JfxSprite middleAlign(){
 		setY(game.getHeight()/2 - getHeight()/2);
 		return this;
 	}
 
-	public Sprite bottomAlign(){
+	public JfxSprite bottomAlign(){
 		setY(game.getHeight() - 1 - getHeight());
 		return this;
 	}
@@ -111,4 +102,5 @@ public abstract class Sprite {
 	public int getCenterY() {
 		return (int)(y + getHeight()/2);
 	}
+
 }

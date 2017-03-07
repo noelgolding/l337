@@ -4,7 +4,7 @@ import java.awt.Canvas;
 
 import javax.swing.JFrame;
 
-public class GFrame extends JFrame {
+public final class GFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
 	
 	public GFrame(String title, Canvas canvas, boolean resizable) {

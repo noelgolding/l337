@@ -11,8 +11,8 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
-public class AssetManager {
-	private static final String imagesFolder = "assets/images";
+public final class AssetManager {
+	public static final String IMAGES_FOLDER = "assets/images";
 	private Map<String, BufferedImage> imagesCache = new HashMap<>();
 	
 	public AssetManager() {
@@ -25,7 +25,7 @@ public class AssetManager {
 	}
 	
 	public BufferedImage getImage(String assetname) {
-		BufferedImage img = imagesCache.get(imagesFolder + "/" + assetname);
+		BufferedImage img = imagesCache.get(assetname);
 		if (img == null) {
 			try {
 				img = loadImageInternal(assetname);
@@ -63,7 +63,7 @@ public class AssetManager {
 	
 	private File getPathToImages() throws URISyntaxException {
 		ClassLoader classLoader = AssetManager.class.getClassLoader();
-		URL resource = classLoader.getResource(imagesFolder);
+		URL resource = classLoader.getResource(IMAGES_FOLDER);
 		URI uri = resource.toURI();
 		return new File(uri);
 	}
