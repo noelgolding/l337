@@ -4,9 +4,9 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
 import l337.game.Game;
-import l337.game.sprite.Sprite;
+import l337.game.sprite.SimpleBitmapSprite;
 
-public class TileSprite extends Sprite{
+public class TileSprite extends SimpleBitmapSprite{
 //	private Tile tile;
 	private BufferedImage img;
 	private int worldX1;
@@ -20,7 +20,7 @@ public class TileSprite extends Sprite{
 	
 	
 	public TileSprite(Game game, Tile tile) {
-		super(game, tile.getX(), tile.getY());
+		super(game, game.getAssetManager().getImage(tile.getSourceImage()), tile.getX(), tile.getY());
 //		this.tile = tile;
 		this.img = game.getAssetManager().getImage(tile.getSourceImage());
 		this.width = tile.getWidth();
@@ -68,5 +68,5 @@ public class TileSprite extends Sprite{
 				srcX2, srcY2, 
 				null);
 	}
-
+	
 }
