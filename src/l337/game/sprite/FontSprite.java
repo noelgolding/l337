@@ -23,8 +23,13 @@ public class FontSprite extends Sprite {
 		super(game);
 		this.string = string;
 		this.color = color;
-		this.font = font; //Initializes the font
+		setFont(font);
+	}
+	
+	protected FontSprite setFont(Font font){
+		this.font = font;
 		this.fontMetrics = game.getCanvas().getFontMetrics(font);
+		return this;
 	}
 
 	@Override
