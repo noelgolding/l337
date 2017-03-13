@@ -15,7 +15,8 @@ public final class TileSet {
 	final private int tileHeight;
 	final private int imageWidth;
 	final private int imageHeight;
-	final private int numCols, numRows;
+	final private int numCols;
+	
 
 	public TileSet(int firstgid, String name, int tileWidth, int tileHeight, String source, int imageWidth, int imageHeight, int columnCount, int numTiles) {
 		this.firstgid = firstgid;
@@ -26,7 +27,6 @@ public final class TileSet {
 		this.imageWidth = imageWidth;
 		this.imageHeight = imageHeight;
 		this.numCols = columnCount;
-		this.numRows = numTiles / numCols;
 		this.lastgid = firstgid + numTiles - 1;
 	}
 	
@@ -35,9 +35,17 @@ public final class TileSet {
 		return String.format("%s: %s", name, source);
 	}
 	
-	public Tile getTile(int gid, int row, int col){
+	public Tile getTile(int gid, int row, int col, int mapCellWidth, int mapCellHeight){
 		int index = gid - firstgid;
 		
+		if (tileWidth > mapCellWidth) {
+			col /= tileWidth/mapCellWidth;
+		}
+		
+		if (tileHeight > mapCellHeight) {
+			row /= tileHeight/mapCellHeight;
+		}
+
 		int xOffset = ((index % numCols) * tileWidth); //column
 		int yOffset = (index / numCols) * tileHeight; //row
 		

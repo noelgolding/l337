@@ -1,6 +1,5 @@
 package l337.game.utils.tiled;
 
-import java.awt.Image;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -100,7 +99,7 @@ public final class TmxLoader {
 				
 				Tile tile = tileSets.stream()
 					.filter(t -> (t.getFirstgid() <= gid && t.getLastgid() >= gid))
-					.findFirst().get().getTile(gid, row, col);
+					.findFirst().get().getTile(gid, row, col, tileWidth, tileHeight);
 				
 				tiles.add(tile);
 			}

@@ -1,7 +1,5 @@
 package l337.game.utils.tiled;
 
-import java.awt.image.BufferedImage;
-
 public class Tile {
 
 	private int gid;

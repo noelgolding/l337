@@ -177,6 +177,16 @@ public abstract class AbstractGame extends KeyAdapter implements Game {
 	}
 	
 	@Override
+	public int getWorldWidth() {
+		return this.viewport.getMaxX();
+	}
+	
+	@Override
+	public int getWorldHeight() {
+		return this.viewport.getMaxY();
+	}
+	
+	@Override
 	public boolean isResizable() {
 		return false;
 	}

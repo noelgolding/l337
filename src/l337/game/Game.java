@@ -19,6 +19,8 @@ public interface Game extends Runnable {
 	public void setDebug(boolean debug);
 	public int getWidth();
 	public int getHeight();
+	public int getWorldWidth();
+	public int getWorldHeight();
 	public boolean isResizable();
 	public AssetManager getAssetManager();
 	public Map<Integer, Boolean> getKeysDown();

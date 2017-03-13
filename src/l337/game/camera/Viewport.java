@@ -72,6 +72,9 @@ public class Viewport {
 	public float getY() {
 		return y;
 	}
+	
+	public int getMaxX() { return (int)(this.max_x  + this.width); }
+	public int getMaxY() { return (int)(this.max_y + this.height); }
 
 	public void setPosition(int x, int y) {
 		this.x = x;

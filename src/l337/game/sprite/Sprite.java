@@ -33,6 +33,14 @@ public abstract class Sprite {
 		return (int)y;
 	}
 	
+	public int getRight(){
+		return getX() + getWidth();
+	}
+	
+	public int getBottom(){
+		return getY() + getHeight();
+	}
+	
 	public abstract int getWidth();
 	public abstract int getHeight();
 	
